@@ -1,0 +1,641 @@
+<html>
+<head>
+	<title>Sheriff of Nottingham: Score Sheet</title>
+
+	<style>
+		body {
+			font-family: sans-serif;
+			padding: 0px;
+			margin: 0px;
+		}
+		section {
+			display: flex;
+		}
+
+		thead td,
+		td.check {
+			text-align: center;
+		}
+		tbody td:first-child {
+			text-align: left;
+			width: 150px;
+		}
+		tbody td,
+		tfoot td,
+		tbody td.right {
+			text-align: right;
+		}
+
+		td.input,
+		td.input input {
+			width: 80px;
+		}
+		td.score {
+			font-weight: bold;
+		}
+		td.total-score {
+			font-weight: bold;
+			font-size: large;
+		}
+
+/*		tbody td,
+		tfoot td {
+			border: solid 5px;
+		}
+*/
+		.hidden {
+			display: none;
+		}
+	</style>
+
+	<script type="text/javascript">
+		// Wait till whole page is loaded.
+		if(window.attachEvent) {
+			window.attachEvent('onload', initialise);
+		} else {
+			if(window.onload) {
+				var curronload = window.onload;
+				var newonload = function(evt) {
+					curronload(evt);
+					initialise(evt);
+				};
+				window.onload = newonload;
+			} else {
+				window.onload = initialise;
+			}
+		}
+
+		function initialise() {
+			data.init();
+			somethingChanged();
+		}
+
+		function somethingChanged() {
+			data.update();
+			kingQueen();
+			data.updateTotals();
+			ranking();
+		}
+
+		function item(name, multiplier) {
+			this.countElement = document.getElementById(name + "Count");
+			this.scoreElement = document.getElementById(name + "Score");
+
+			this.multiplier = multiplier;
+
+			this.count = function() {
+				if (typeof this.countElement.value !== "undefined") {
+					return this.countElement.value * 1;
+				} else {
+					return 0;
+				}
+			}
+			this.score = function() {
+				if (typeof this.scoreElement.innerHTML !== "undefined") {
+					return this.scoreElement.innerHTML * 1;
+				} else {
+					return 0;
+				}
+			}
+			this.update = function() {
+				this.scoreElement.innerHTML = this.count() * this.multiplier;
+			}
+		}
+		function legalGoods(player) {
+			this.applesItem  = new item("p" + player + "Apples",  2);
+			this.cheeseItem  = new item("p" + player + "Cheese",  3);
+			this.breadItem   = new item("p" + player + "Bread",   3);
+			this.chickenItem = new item("p" + player + "Chicken", 4);
+			this.legaltotal = document.getElementById("p" + player + "LegalTotal");
+
+			this.count = function() {
+				return this.applesItem.count() + this.cheeseItem.count() + this.breadItem.count() + this.chickenItem.count();
+			}
+			this.score = function() {
+				if (typeof this.legaltotal.innerHTML !== "undefined") {
+					return this.legaltotal.innerHTML * 1;
+				} else {
+					return 0;
+				}
+			}
+			this.update = function() {
+				this.applesItem.update();
+				this.cheeseItem.update();
+				this.breadItem.update();
+				this.chickenItem.update();
+				this.legaltotal.innerHTML = this.applesItem.score() + this.cheeseItem.score() + this.breadItem.score() + this.chickenItem.score();
+			}
+		}
+		function contraband(player) {
+			this.pepperItem   = new item("p" + player + "Pepper",   6);
+			this.meadItem     = new item("p" + player + "Mead",     7);
+			this.silkItem     = new item("p" + player + "Silk",     8);
+			this.crossbowItem = new item("p" + player + "Crossbow", 9);
+			this.contrabandtotal = document.getElementById("p" + player + "ContrabandTotal");
+
+			this.count = function() {
+				return this.pepperItem.count() + this.meadItem.count() + this.silkItem.count() + this.crossbowItem.count();
+			}
+			this.score = function() {
+				if (typeof this.contrabandtotal.innerHTML !== "undefined") {
+					return this.contrabandtotal.innerHTML * 1;
+				} else {
+					return 0;
+				}
+			}
+			this.update = function() {
+				this.pepperItem.update();
+				this.meadItem.update();
+				this.silkItem.update();
+				this.crossbowItem.update();
+				this.contrabandtotal.innerHTML = this.pepperItem.score() + this.meadItem.score() + this.silkItem.score() + this.crossbowItem.score();
+			}
+		}
+		function royalGoods(player) {
+			this.greenapplesItem       = new item("p" + player + "GreenApples",       4);
+			this.goldenapplesItem      = new item("p" + player + "GoldenApples",      6);
+			this.goudacheeseItem       = new item("p" + player + "GoudaCheese",       6);
+			this.bleucheeseItem        = new item("p" + player + "BleuCheese",        9);
+			this.ryebreadItem          = new item("p" + player + "RyeBread",          6);
+			this.pumpernickelbreadItem = new item("p" + player + "PumpernickelBread", 9);
+			this.royalroosterItem      = new item("p" + player + "RoyalRooster",      8);
+			this.royaltotal            = document.getElementById("p" + player + "RoyalTotal");
+
+			this.score = function() {
+				if (typeof this.royaltotal.innerHTML !== "undefined") {
+					return this.royaltotal.innerHTML * 1;
+				} else {
+					return 0;
+				}
+			}
+			this.applesCount = function() {
+				return (this.greenapplesItem.count() * 2) + (this.goldenapplesItem.count() * 3);
+			}
+			this.cheeseCount = function() {
+				return (this.goudacheeseItem.count() * 2) + (this.bleucheeseItem.count() * 3);
+			}
+			this.breadCount = function() {
+				return (this.ryebreadItem.count() * 2) + (this.pumpernickelbreadItem.count() * 3);
+			}
+			this.chickenCount = function() {
+				return (this.royalroosterItem.count() * 2);
+			}
+			this.update = function() {
+				this.greenapplesItem.update();
+				this.goldenapplesItem.update();
+				this.goudacheeseItem.update();
+				this.bleucheeseItem.update();
+				this.ryebreadItem.update();
+				this.pumpernickelbreadItem.update();
+				this.royalroosterItem.update();
+				this.royaltotal.innerHTML = this.greenapplesItem.score() + this.goldenapplesItem.score() + this.goudacheeseItem.score() + this.bleucheeseItem.score() + this.ryebreadItem.score() + this.pumpernickelbreadItem.score() + this.royalroosterItem. score();
+			}
+		}
+		function goldCoins(player) {
+			this.goldcoinsItem = new item("p" + player + "GoldCoins", 1);
+
+			this.score = function() {
+				return this.goldcoinsItem.score();
+			}
+			this.update = function() {
+				this.goldcoinsItem.update();
+			}
+		}
+		function kingQueenItem(player, name) {
+			this.scoreElement = document.getElementById("p" + player + name + "KingQueenScore");
+
+			this.score = function() {
+				if (typeof this.scoreElement.value !== "undefined") {
+					return this.scoreElement.value;
+				} else {
+					return 0;
+				}
+			}
+		}
+		function kingQueenScores(player) {
+			this.applesItem  = new kingQueenItem(player, "Apples");
+			this.cheeseItem  = new kingQueenItem(player, "Cheese");
+			this.breadItem   = new kingQueenItem(player, "Bread");
+			this.chickenItem = new kingQueenItem(player, "Chicken");
+
+			this.score = function() {
+				return this.applesItem.score() + this.cheeseItem.score() + this.breadItem.score() + this.chickenItem.score();
+			}
+		}
+		function player(number) {
+			this.number = number;
+
+			this.legalGoodsCategory = new legalGoods(number);
+			this.contrabandCategory = new contraband(number);
+			this.royalGoodsCategory = new royalGoods(number);
+			this.goldCoinsCategory  = new goldCoins(number);
+
+			this.kingQueenScores = new kingQueenScores(number);
+
+			this.totalElement = document.getElementById("p" + number + "Total");
+
+			this.kingQueenCount = function() {
+				return [
+					this.legalGoodsCategory.applesItem.count() + this.royalGoodsCategory.applesCount(),
+					this.legalGoodsCategory.cheeseItem.count() + this.royalGoodsCategory.cheeseCount(),
+					this.legalGoodsCategory.breadItem.count() + this.royalGoodsCategory.breadCount(),
+					this.legalGoodsCategory.chickenItem.count() + this.royalGoodsCategory.chickenCount()
+				]
+			}
+			this.score = function() {
+				return [this.number, [(this.legalGoodsCategory.score() + this.contrabandCategory.score() + this.royalGoodsCategory.score() + this.goldCoinsCategory.score() + this.kingQueenScores.score()), this.legalGoodsCategory.count(), this.contrabandCategory.count()]];
+			}
+			this.update = function() {
+				this.legalGoodsCategory.update();
+				this.contrabandCategory.update();
+				this.royalGoodsCategory.update();
+				this.goldCoinsCategory.update();
+			}
+			this.updateTotals = function() {
+				this.totalElement.innerHTML = this.legalGoodsCategory.score() + this.contrabandCategory.score() + this.royalGoodsCategory.score() + this.goldCoinsCategory.score() + this.kingQueenScores.score();
+			};
+		}
+		var data = {
+			init: function() {
+				this.player1 = new player(1);
+				this.player2 = new player(2);
+				this.player3 = new player(3);
+				this.player4 = new player(4);
+				this.player5 = new player(5);
+			},
+			update: function() {
+				this.player1.update();
+				this.player2.update();
+				this.player3.update();
+				this.player4.update();
+				this.player5.update();
+			},
+			updateTotals: function() {
+				this.player1.updateTotals();
+				this.player2.updateTotals();
+				this.player3.updateTotals();
+				this.player4.updateTotals();
+				this.player5.updateTotals();
+			}
+		}
+
+		function kingQueen() {
+			counts = [data.player1.kingQueenCount(), data.player2.kingQueenCount(), data.player3.kingQueenCount(), data.player4.kingQueenCount(), data.player5.kingQueenCount()];
+			kingQueenItemScore(counts, 0, 20, 10, "Apples");
+			kingQueenItemScore(counts, 1, 15, 10, "Cheese");
+			kingQueenItemScore(counts, 2, 15, 10, "Bread");
+			kingQueenItemScore(counts, 3, 10,  5, "Chicken");
+		}
+		function kingQueenItemScore(counts, index, kingBonus, queenBonus, name) {
+			var kingCount = 0;
+			var kings = [];
+			var queenCount = 0;
+			var queens = [];
+			var player = 1;
+			do {
+				playerCount = counts[player - 1][index];
+				if (playerCount > 0) {
+					if (playerCount > kingCount) {
+						queenCount = kingCount;
+						queens = kings;
+						kingCount = playerCount;
+						kings = [player];
+					} else if (playerCount == kingCount) {
+						kings = kings.concat([player]);
+					} else if (playerCount > queenCount) {
+						queenCount = playerCount;
+						queens = [player];
+					} else if (playerCount == queenCount) {
+						queens = queens.concat([player]);
+					}
+				}
+				player++;
+			} while (player <= 5);
+
+			if (kings.length == 1) {
+				// There is 1 king. Check on the number of queens.
+				var kingBonus1 = kingBonus;
+				if (queens.length == 1) {
+					var queenBonus1 = queenBonus;
+				} else if (queens.length > 1) {
+					var queenBonus1 = Math.floor(queenBonus / queens.length);
+				} else {
+					queens = [];
+					var queensBonus1 = 0;
+				}
+			} else if (kings.length > 1) {
+				// There is more than 1 king, so no queen. Devide the bonuses.
+				var kingBonus1 = Math.floor((kingBonus + queenBonus) / kings.length);
+				queens = [];
+				var queenBonus1 = 0;
+			} else {
+				// There are no kings or queens.
+				kings = [];
+				var kingBonus1 = 0;
+				queens = [];
+				var queenBonus1 = 0;
+			}
+
+			for (i = 1; i <= 5; i++) {
+				if (kings.indexOf(i) != -1) {
+					document.getElementById("p" + i + name + "KingQueenTitle").innerHTML = "King";
+					document.getElementById("p" + i + name + "KingQueenScore").innerHTML = kingBonus1;
+				} else if (queens.indexOf(i) != -1) {
+					document.getElementById("p" + i + name + "KingQueenTitle").innerHTML = "Queen";
+					document.getElementById("p" + i + name + "KingQueenScore").innerHTML = queenBonus1;
+				} else {
+					document.getElementById("p" + i + name + "KingQueenTitle").innerHTML = "";
+					document.getElementById("p" + i + name + "KingQueenScore").innerHTML = 0;
+				}
+			}
+		}
+
+		function ranking() {
+			scores = [data.player1.score(), data.player2.score(), data.player3.score(), data.player4.score(), data.player5.score()];
+			sorted = scores.sort(
+				function(a, b) {
+					if (b[1][0] == a[1][0]) {
+						if (b[1][1] == a[1][1]) {
+							return b[1][2]-a[1][2];
+						} else {
+							return b[1][1]-a[1][1];
+						}
+					} else {
+						return b[1][0]-a[1][0];
+					}
+				}
+			)
+
+			var rank = 1;
+			var score = sorted[0][1];
+			for (i = 0; i < sorted.length; i++) {
+				if ((sorted[i][1][0] < score[0])
+					|| ((sorted[i][1][0] == score[0]) && (sorted[i][1][1] < score[1]))
+					|| ((sorted[i][1][0] == score[0]) && (sorted[i][1][1] == score[1]) && (sorted[i][1][2] < score[2])))
+				{
+					rank = i + 1;
+					score = sorted[i][1];
+				}
+				writeRank(rank, sorted[i][0]);
+			}
+		}
+		function writeRank(rank, player) {
+			switch (rank) {
+				case 1:
+					document.getElementById("p" + player + "Place").innerHTML = "1st Place";
+					break;
+				case 2:
+					document.getElementById("p" + player + "Place").innerHTML = "2nd Place";
+					break;
+				case 3:
+					document.getElementById("p" + player + "Place").innerHTML = "3rd Place";
+					break;
+				case 4:
+					document.getElementById("p" + player + "Place").innerHTML = "4th Place";
+					break;
+				case 5:
+					document.getElementById("p" + player + "Place").innerHTML = "5th Place";
+					break;
+				default:
+					document.getElementById("p" + player + "Place").innerHTML = "";
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<H1>Sheriff of Nottingham: Score Sheet</h1>
+
+	<table>
+		<thead>
+			<th>
+				<td colspan="2" class="center"><input type="text" id="p1Name" placeholder="Player 1"></td>
+				<td colspan="2" class="center"><input type="text" id="p2Name" placeholder="Player 2"></td>
+				<td colspan="2" class="center"><input type="text" id="p3Name" placeholder="Player 3"></td>
+				<td colspan="2" class="center"><input type="text" id="p4Name" placeholder="Player 4"></td>
+				<td colspan="2" class="center"><input type="text" id="p5Name" placeholder="Player 5"></td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr><td class="right">Legal Goods</td></tr>
+			<tr>
+				<td>Apples</td>
+				<td class="input"><input type="text" id="p1ApplesCount" onchange="somethingChanged()"></td><td id="p1ApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p2ApplesCount" onchange="somethingChanged()"></td><td id="p2ApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p3ApplesCount" onchange="somethingChanged()"></td><td id="p3ApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p4ApplesCount" onchange="somethingChanged()"></td><td id="p4ApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p5ApplesCount" onchange="somethingChanged()"></td><td id="p5ApplesScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Cheese</td>
+				<td class="input"><input type="text" id="p1CheeseCount" onchange="somethingChanged()"></td><td id="p1CheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p2CheeseCount" onchange="somethingChanged()"></td><td id="p2CheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p3CheeseCount" onchange="somethingChanged()"></td><td id="p3CheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p4CheeseCount" onchange="somethingChanged()"></td><td id="p4CheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p5CheeseCount" onchange="somethingChanged()"></td><td id="p5CheeseScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Bread</td>
+				<td class="input"><input type="text" id="p1BreadCount" onchange="somethingChanged()"></td><td id="p1BreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p2BreadCount" onchange="somethingChanged()"></td><td id="p2BreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p3BreadCount" onchange="somethingChanged()"></td><td id="p3BreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p4BreadCount" onchange="somethingChanged()"></td><td id="p4BreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p5BreadCount" onchange="somethingChanged()"></td><td id="p5BreadScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Chicken</td>
+				<td class="input"><input type="text" id="p1ChickenCount" onchange="somethingChanged()"></td><td id="p1ChickenScore" class="score"></td>
+				<td class="input"><input type="text" id="p2ChickenCount" onchange="somethingChanged()"></td><td id="p2ChickenScore" class="score"></td>
+				<td class="input"><input type="text" id="p3ChickenCount" onchange="somethingChanged()"></td><td id="p3ChickenScore" class="score"></td>
+				<td class="input"><input type="text" id="p4ChickenCount" onchange="somethingChanged()"></td><td id="p4ChickenScore" class="score"></td>
+				<td class="input"><input type="text" id="p5ChickenCount" onchange="somethingChanged()"></td><td id="p5ChickenScore" class="score"></td>
+			</tr>
+			<tr>
+				<td class="right">Sub Total</td>
+				<td colspan="2" id="p1LegalTotal" class="total-score"></td>
+				<td colspan="2" id="p2LegalTotal" class="total-score"></td>
+				<td colspan="2" id="p3LegalTotal" class="total-score"></td>
+				<td colspan="2" id="p4LegalTotal" class="total-score"></td>
+				<td colspan="2" id="p5LegalTotal" class="total-score"></td>
+			</tr>
+
+			<tr></tr>
+
+			<tr><td class="right">Contraband</td></tr>
+			<tr>
+				<td>Pepper</td>
+				<td class="input"><input type="text" id="p1PepperCount" onchange="somethingChanged()"></td><td id="p1PepperScore" class="score"></td>
+				<td class="input"><input type="text" id="p2PepperCount" onchange="somethingChanged()"></td><td id="p2PepperScore" class="score"></td>
+				<td class="input"><input type="text" id="p3PepperCount" onchange="somethingChanged()"></td><td id="p3PepperScore" class="score"></td>
+				<td class="input"><input type="text" id="p4PepperCount" onchange="somethingChanged()"></td><td id="p4PepperScore" class="score"></td>
+				<td class="input"><input type="text" id="p5PepperCount" onchange="somethingChanged()"></td><td id="p5PepperScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Mead</td>
+				<td class="input"><input type="text" id="p1MeadCount" onchange="somethingChanged()"></td><td id="p1MeadScore" class="score"></td>
+				<td class="input"><input type="text" id="p2MeadCount" onchange="somethingChanged()"></td><td id="p2MeadScore" class="score"></td>
+				<td class="input"><input type="text" id="p3MeadCount" onchange="somethingChanged()"></td><td id="p3MeadScore" class="score"></td>
+				<td class="input"><input type="text" id="p4MeadCount" onchange="somethingChanged()"></td><td id="p4MeadScore" class="score"></td>
+				<td class="input"><input type="text" id="p5MeadCount" onchange="somethingChanged()"></td><td id="p5MeadScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Silk</td>
+				<td class="input"><input type="text" id="p1SilkCount" onchange="somethingChanged()"></td><td id="p1SilkScore" class="score"></td>
+				<td class="input"><input type="text" id="p2SilkCount" onchange="somethingChanged()"></td><td id="p2SilkScore" class="score"></td>
+				<td class="input"><input type="text" id="p3SilkCount" onchange="somethingChanged()"></td><td id="p3SilkScore" class="score"></td>
+				<td class="input"><input type="text" id="p4SilkCount" onchange="somethingChanged()"></td><td id="p4SilkScore" class="score"></td>
+				<td class="input"><input type="text" id="p5SilkCount" onchange="somethingChanged()"></td><td id="p5SilkScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Crossbow</td>
+				<td class="input"><input type="text" id="p1CrossbowCount" onchange="somethingChanged()"></td><td id="p1CrossbowScore" class="score"></td>
+				<td class="input"><input type="text" id="p2CrossbowCount" onchange="somethingChanged()"></td><td id="p2CrossbowScore" class="score"></td>
+				<td class="input"><input type="text" id="p3CrossbowCount" onchange="somethingChanged()"></td><td id="p3CrossbowScore" class="score"></td>
+				<td class="input"><input type="text" id="p4CrossbowCount" onchange="somethingChanged()"></td><td id="p4CrossbowScore" class="score"></td>
+				<td class="input"><input type="text" id="p5CrossbowCount" onchange="somethingChanged()"></td><td id="p5CrossbowScore" class="score"></td>
+			</tr>
+			<tr>
+				<td class="right">Sub Total</td>
+				<td colspan="2" id="p1ContrabandTotal" class="total-score"></td>
+				<td colspan="2" id="p2ContrabandTotal" class="total-score"></td>
+				<td colspan="2" id="p3ContrabandTotal" class="total-score"></td>
+				<td colspan="2" id="p4ContrabandTotal" class="total-score"></td>
+				<td colspan="2" id="p5ContrabandTotal" class="total-score"></td>
+			</tr>
+
+			<tr></tr>
+
+			<tr><td class="right">Royal Goods</td></tr>
+			<tr>
+				<td>Green Apples</td>
+				<td class="input"><input type="text" id="p1GreenApplesCount" onchange="somethingChanged()"></td><td id="p1GreenApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p2GreenApplesCount" onchange="somethingChanged()"></td><td id="p2GreenApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p3GreenApplesCount" onchange="somethingChanged()"></td><td id="p3GreenApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p4GreenApplesCount" onchange="somethingChanged()"></td><td id="p4GreenApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p5GreenApplesCount" onchange="somethingChanged()"></td><td id="p5GreenApplesScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Golden Apples</td>
+				<td class="input"><input type="text" id="p1GoldenApplesCount" onchange="somethingChanged()"></td><td id="p1GoldenApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p2GoldenApplesCount" onchange="somethingChanged()"></td><td id="p2GoldenApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p3GoldenApplesCount" onchange="somethingChanged()"></td><td id="p3GoldenApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p4GoldenApplesCount" onchange="somethingChanged()"></td><td id="p4GoldenApplesScore" class="score"></td>
+				<td class="input"><input type="text" id="p5GoldenApplesCount" onchange="somethingChanged()"></td><td id="p5GoldenApplesScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Gouda Cheese</td>
+				<td class="input"><input type="text" id="p1GoudaCheeseCount" onchange="somethingChanged()"></td><td id="p1GoudaCheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p2GoudaCheeseCount" onchange="somethingChanged()"></td><td id="p2GoudaCheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p3GoudaCheeseCount" onchange="somethingChanged()"></td><td id="p3GoudaCheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p4GoudaCheeseCount" onchange="somethingChanged()"></td><td id="p4GoudaCheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p5GoudaCheeseCount" onchange="somethingChanged()"></td><td id="p5GoudaCheeseScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Bleu Cheese</td>
+				<td class="input"><input type="text" id="p1BleuCheeseCount" onchange="somethingChanged()"></td><td id="p1BleuCheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p2BleuCheeseCount" onchange="somethingChanged()"></td><td id="p2BleuCheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p3BleuCheeseCount" onchange="somethingChanged()"></td><td id="p3BleuCheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p4BleuCheeseCount" onchange="somethingChanged()"></td><td id="p4BleuCheeseScore" class="score"></td>
+				<td class="input"><input type="text" id="p5BleuCheeseCount" onchange="somethingChanged()"></td><td id="p5BleuCheeseScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Rye Bread</td>
+				<td class="input"><input type="text" id="p1RyeBreadCount" onchange="somethingChanged()"></td><td id="p1RyeBreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p2RyeBreadCount" onchange="somethingChanged()"></td><td id="p2RyeBreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p3RyeBreadCount" onchange="somethingChanged()"></td><td id="p3RyeBreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p4RyeBreadCount" onchange="somethingChanged()"></td><td id="p4RyeBreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p5RyeBreadCount" onchange="somethingChanged()"></td><td id="p5RyeBreadScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Pumpernickel Bread</td>
+				<td class="input"><input type="text" id="p1PumpernickelBreadCount" onchange="somethingChanged()"></td><td id="p1PumpernickelBreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p2PumpernickelBreadCount" onchange="somethingChanged()"></td><td id="p2PumpernickelBreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p3PumpernickelBreadCount" onchange="somethingChanged()"></td><td id="p3PumpernickelBreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p4PumpernickelBreadCount" onchange="somethingChanged()"></td><td id="p4PumpernickelBreadScore" class="score"></td>
+				<td class="input"><input type="text" id="p5PumpernickelBreadCount" onchange="somethingChanged()"></td><td id="p5PumpernickelBreadScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Royal Rooster</td>
+				<td class="input"><input type="text" id="p1RoyalRoosterCount" onchange="somethingChanged()"></td><td id="p1RoyalRoosterScore" class="score"></td>
+				<td class="input"><input type="text" id="p2RoyalRoosterCount" onchange="somethingChanged()"></td><td id="p2RoyalRoosterScore" class="score"></td>
+				<td class="input"><input type="text" id="p3RoyalRoosterCount" onchange="somethingChanged()"></td><td id="p3RoyalRoosterScore" class="score"></td>
+				<td class="input"><input type="text" id="p4RoyalRoosterCount" onchange="somethingChanged()"></td><td id="p4RoyalRoosterScore" class="score"></td>
+				<td class="input"><input type="text" id="p5RoyalRoosterCount" onchange="somethingChanged()"></td><td id="p5RoyalRoosterScore" class="score"></td>
+			</tr>
+			<tr>
+				<td class="right">Sub Total</td>
+				<td colspan="2" id="p1RoyalTotal" class="total-score"></td>
+				<td colspan="2" id="p2RoyalTotal" class="total-score"></td>
+				<td colspan="2" id="p3RoyalTotal" class="total-score"></td>
+				<td colspan="2" id="p4RoyalTotal" class="total-score"></td>
+				<td colspan="2" id="p5RoyalTotal" class="total-score"></td>
+			</tr>
+
+			<tr></tr>
+
+			<tr>
+				<td>Gold Coins</td>
+				<td class="input"><input type="text" id="p1GoldCoinsCount" onchange="somethingChanged()"></td><td id="p1GoldCoinsScore" class="score"></td>
+				<td class="input"><input type="text" id="p2GoldCoinsCount" onchange="somethingChanged()"></td><td id="p2GoldCoinsScore" class="score"></td>
+				<td class="input"><input type="text" id="p3GoldCoinsCount" onchange="somethingChanged()"></td><td id="p3GoldCoinsScore" class="score"></td>
+				<td class="input"><input type="text" id="p4GoldCoinsCount" onchange="somethingChanged()"></td><td id="p4GoldCoinsScore" class="score"></td>
+				<td class="input"><input type="text" id="p5GoldCoinsCount" onchange="somethingChanged()"></td><td id="p5GoldCoinsScore" class="score"></td>
+			</tr>
+
+			<tr></tr>
+
+			<tr><td class="right">Kings & Queens</td></tr>
+			<tr>
+				<td>Apples</td>
+				<td id="p1ApplesKingQueenTitle" class="score"></td><td id="p1ApplesKingQueenScore" class="score"></td>
+				<td id="p2ApplesKingQueenTitle" class="score"></td><td id="p2ApplesKingQueenScore" class="score"></td>
+				<td id="p3ApplesKingQueenTitle" class="score"></td><td id="p3ApplesKingQueenScore" class="score"></td>
+				<td id="p4ApplesKingQueenTitle" class="score"></td><td id="p4ApplesKingQueenScore" class="score"></td>
+				<td id="p5ApplesKingQueenTitle" class="score"></td><td id="p5ApplesKingQueenScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Cheese</td>
+				<td id="p1CheeseKingQueenTitle" class="score"></td><td id="p1CheeseKingQueenScore" class="score"></td>
+				<td id="p2CheeseKingQueenTitle" class="score"></td><td id="p2CheeseKingQueenScore" class="score"></td>
+				<td id="p3CheeseKingQueenTitle" class="score"></td><td id="p3CheeseKingQueenScore" class="score"></td>
+				<td id="p4CheeseKingQueenTitle" class="score"></td><td id="p4CheeseKingQueenScore" class="score"></td>
+				<td id="p5CheeseKingQueenTitle" class="score"></td><td id="p5CheeseKingQueenScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Bread</td>
+				<td id="p1BreadKingQueenTitle" class="score"></td><td id="p1BreadKingQueenScore" class="score"></td>
+				<td id="p2BreadKingQueenTitle" class="score"></td><td id="p2BreadKingQueenScore" class="score"></td>
+				<td id="p3BreadKingQueenTitle" class="score"></td><td id="p3BreadKingQueenScore" class="score"></td>
+				<td id="p4BreadKingQueenTitle" class="score"></td><td id="p4BreadKingQueenScore" class="score"></td>
+				<td id="p5BreadKingQueenTitle" class="score"></td><td id="p5BreadKingQueenScore" class="score"></td>
+			</tr>
+			<tr>
+				<td>Chicken</td>
+				<td id="p1ChickenKingQueenTitle" class="score"></td><td id="p1ChickenKingQueenScore" class="score"></td>
+				<td id="p2ChickenKingQueenTitle" class="score"></td><td id="p2ChickenKingQueenScore" class="score"></td>
+				<td id="p3ChickenKingQueenTitle" class="score"></td><td id="p3ChickenKingQueenScore" class="score"></td>
+				<td id="p4ChickenKingQueenTitle" class="score"></td><td id="p4ChickenKingQueenScore" class="score"></td>
+				<td id="p5ChickenKingQueenTitle" class="score"></td><td id="p5ChickenKingQueenScore" class="score"></td>
+			</tr>
+			<tr>
+				<td class="right">Sub Total</td>
+				<td colspan="2" id="p1KingQueenTotal" class="total-score"></td>
+				<td colspan="2" id="p2KingQueenTotal" class="total-score"></td>
+				<td colspan="2" id="p3KingQueenTotal" class="total-score"></td>
+				<td colspan="2" id="p4KingQueenTotal" class="total-score"></td>
+				<td colspan="2" id="p5KingQueenTotal" class="total-score"></td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td>Total</td>
+				<td id="p1Place"class="right"></td><td id="p1Total" class="total-score"></td>
+				<td id="p2Place"class="right"></td><td id="p2Total" class="total-score"></td>
+				<td id="p3Place"class="right"></td><td id="p3Total" class="total-score"></td>
+				<td id="p4Place"class="right"></td><td id="p4Total" class="total-score"></td>
+				<td id="p5Place"class="right"></td><td id="p5Total" class="total-score"></td>
+			</tr>
+		</tfoot>
+	</table>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<html>
+<head>
+	<title>Five Tribes: Score Sheet</title>
+
+	<style>
+		body {
+			font-family: sans-serif;
+			padding: 0px;
+			margin: 0px;
+		}
+		section {
+			display: flex;
+		}
+
+		thead td,
+		td.check {
+			text-align: center;
+		}
+		tbody td:first-child {
+			text-align: left;
+		}
+		tbody td,
+		tfoot td,
+		tbody td.right {
+			text-align: right;
+		}
+
+		td.input,
+		td.input input {
+			width: 100px;
+		}
+		td.score {
+			font-weight: bold;
+		}
+		td.total-score {
+			font-weight: bold;
+			font-size: large;
+		}
+
+/*		tbody td,
+		tfoot td {
+			border: solid 5px;
+		}
+*/
+		.hidden {
+			display: none;
+		}
+	</style>
+
+	<script type="text/javascript">
+		// Wait till whole page is loaded.
+		if(window.attachEvent) {
+			window.attachEvent('onload', initialise);
+		} else {
+			if(window.onload) {
+				var curronload = window.onload;
+				var newonload = function(evt) {
+					curronload(evt);
+					initialise(evt);
+				};
+				window.onload = newonload;
+			} else {
+				window.onload = initialise;
+			}
+		}
+
+		function initialise() {
+			djinnSelects.init();
+			somethingChanged();
+		}
+
+		function somethingChanged() {
+			// Gold Coins
+			var p1Gc = document.getElementById("p1GcInput").value * 1;
+			var p2Gc = document.getElementById("p2GcInput").value * 1;
+			var p3Gc = document.getElementById("p3GcInput").value * 1;
+			var p4Gc = document.getElementById("p4GcInput").value * 1;
+			document.getElementById("p1GcTotal").innerHTML = p1Gc;
+			document.getElementById("p2GcTotal").innerHTML = p2Gc;
+			document.getElementById("p3GcTotal").innerHTML = p3Gc;
+			document.getElementById("p4GcTotal").innerHTML = p4Gc;
+
+			// Viziers
+			var p1V = document.getElementById("p1VInput").value * 1;
+			var p2V = document.getElementById("p2VInput").value * 1;
+			var p3V = document.getElementById("p3VInput").value * 1;
+			var p4V = document.getElementById("p4VInput").value * 1;
+			var p1VTotal = p1V * djinnSelects.jafaar.value(1);
+			if (p1V > p2V) {p1VTotal += 10};
+			if (p1V > p3V) {p1VTotal += 10};
+			if (p1V > p4V) {p1VTotal += 10};
+			var p2VTotal = p2V * djinnSelects.jafaar.value(2);
+			if (p2V > p1V) {p2VTotal += 10};
+			if (p2V > p3V) {p2VTotal += 10};
+			if (p2V > p4V) {p2VTotal += 10};
+			var p3VTotal = p3V * djinnSelects.jafaar.value(3);
+			if (p3V > p1V) {p3VTotal += 10};
+			if (p3V > p2V) {p3VTotal += 10};
+			if (p3V > p4V) {p3VTotal += 10};
+			var p4VTotal = p4V * djinnSelects.jafaar.value(4);
+			if (p4V > p1V) {p4VTotal += 10};
+			if (p4V > p2V) {p4VTotal += 10};
+			if (p4V > p3V) {p4VTotal += 10};
+			document.getElementById("p1VTotal").innerHTML = p1VTotal;
+			document.getElementById("p2VTotal").innerHTML = p2VTotal;
+			document.getElementById("p3VTotal").innerHTML = p3VTotal;
+			document.getElementById("p4VTotal").innerHTML = p4VTotal;
+
+			// Elders
+			var p1E = document.getElementById("p1EInput").value * djinnSelects.shamhat.value(1);
+			var p2E = document.getElementById("p2EInput").value * djinnSelects.shamhat.value(2);
+			var p3E = document.getElementById("p3EInput").value * djinnSelects.shamhat.value(3);
+			var p4E = document.getElementById("p4EInput").value * djinnSelects.shamhat.value(4);
+			document.getElementById("p1ETotal").innerHTML = p1E;
+			document.getElementById("p2ETotal").innerHTML = p2E;
+			document.getElementById("p3ETotal").innerHTML = p3E;
+			document.getElementById("p4ETotal").innerHTML = p4E;
+
+			// Djinns
+			var p1D = document.getElementById("p1DInput").value * 1;
+			var p2D = document.getElementById("p2DInput").value * 1;
+			var p3D = document.getElementById("p3DInput").value * 1;
+			var p4D = document.getElementById("p4DInput").value * 1;
+			document.getElementById("p1DTotal").innerHTML = p1D;
+			document.getElementById("p2DTotal").innerHTML = p2D;
+			document.getElementById("p3DTotal").innerHTML = p3D;
+			document.getElementById("p4DTotal").innerHTML = p4D;
+
+			// Tiles (Camels)
+			var p1T = document.getElementById("p1TInput").value * 1;
+			var p2T = document.getElementById("p2TInput").value * 1;
+			var p3T = document.getElementById("p3TInput").value * 1;
+			var p4T = document.getElementById("p4TInput").value * 1;
+			document.getElementById("p1TTotal").innerHTML = p1T;
+			document.getElementById("p2TTotal").innerHTML = p2T;
+			document.getElementById("p3TTotal").innerHTML = p3T;
+			document.getElementById("p4TTotal").innerHTML = p4T;
+
+			// Palm Trees
+			var p1Pt = document.getElementById("p1PtInput").value * djinnSelects.haurvatat.value(1);
+			var p2Pt = document.getElementById("p2PtInput").value * djinnSelects.haurvatat.value(2);
+			var p3Pt = document.getElementById("p3PtInput").value * djinnSelects.haurvatat.value(3);
+			var p4Pt = document.getElementById("p4PtInput").value * djinnSelects.haurvatat.value(4);
+			document.getElementById("p1PtTotal").innerHTML = p1Pt;
+			document.getElementById("p2PtTotal").innerHTML = p2Pt;
+			document.getElementById("p3PtTotal").innerHTML = p3Pt;
+			document.getElementById("p4PtTotal").innerHTML = p4Pt;
+
+			// Palaces
+			var p1P = document.getElementById("p1PInput").value * 5;
+			var p2P = document.getElementById("p2PInput").value * 5;
+			var p3P = document.getElementById("p3PInput").value * 5;
+			var p4P = document.getElementById("p4PInput").value * 5;
+			document.getElementById("p1PTotal").innerHTML = p1P;
+			document.getElementById("p2PTotal").innerHTML = p2P;
+			document.getElementById("p3PTotal").innerHTML = p3P;
+			document.getElementById("p4PTotal").innerHTML = p4P;
+
+			// Merchandise
+			var p1M = document.getElementById("p1MInput").value * 1;
+			var p2M = document.getElementById("p2MInput").value * 1;
+			var p3M = document.getElementById("p3MInput").value * 1;
+			var p4M = document.getElementById("p4MInput").value * 1;
+			document.getElementById("p1MTotal").innerHTML = p1M;
+			document.getElementById("p2MTotal").innerHTML = p2M;
+			document.getElementById("p3MTotal").innerHTML = p3M;
+			document.getElementById("p4MTotal").innerHTML = p4M;
+
+			// Totals
+			var p1Score = p1Gc + p1VTotal + p1E + p1D + p1T + p1Pt + p1P + p1M;
+			var p2Score = p2Gc + p2VTotal + p2E + p2D + p2T + p2Pt + p2P + p2M;
+			var p3Score = p3Gc + p3VTotal + p3E + p3D + p3T + p3Pt + p3P + p3M;
+			var p4Score = p4Gc + p4VTotal + p4E + p4D + p4T + p4Pt + p4P + p4M;
+			document.getElementById("p1Total").innerHTML = p1Score;
+			document.getElementById("p2Total").innerHTML = p2Score;
+			document.getElementById("p3Total").innerHTML = p3Score;
+			document.getElementById("p4Total").innerHTML = p4Score;
+
+			var scores = [
+				[p1Score, 1],
+				[p2Score, 2],
+				[p3Score, 3],
+				[p4Score, 4]];
+
+			debugText(scores);
+
+			var sorted = scores.sort(function(a, b){return b[0]-a[0]});
+			var i = 0;
+			var rank = i + 1;
+			writeRanking(rank, sorted[i][1]);
+			var score = sorted[i][0];
+			i++;
+			while (i < sorted.length) {
+				if (sorted[i][0] < score) {
+					score = sorted[i][0];
+					rank = i + 1;
+				}
+				writeRanking(rank, sorted[i][1]);
+				i++;
+			}
+		}
+		function debugText(scores) {
+			var sorted = scores.sort(function(a, b){return b[0]-a[0]});
+			var i = 0;
+			var rank = i + 1;
+			var text = rank + "[" + sorted[0] + "]";
+			var score = sorted[i][0];
+			i++;
+			while (i < sorted.length) {
+				if (sorted[i][0] < score) {
+					text += "<br />" + (i + 1);
+					score = sorted[i][0];
+					rank = i + 1;
+				}
+				text += "[" + sorted[i] + "]";
+				i++;
+			}
+			document.getElementById("debug").innerHTML = text;
+		}
+
+		function writeRanking(rank, player) {
+			switch (rank) {
+				case 1:
+					document.getElementById("p" + player + "Place").innerHTML = "1st Place";
+					break;
+				case 2:
+					document.getElementById("p" + player + "Place").innerHTML = "2nd Place";
+					break;
+				case 3:
+					document.getElementById("p" + player + "Place").innerHTML = "3rd Place";
+					break;
+				case 4:
+					document.getElementById("p" + player + "Place").innerHTML = "4th Place";
+					break;
+				default:
+					document.getElementById("p" + player + "Place").innerHTML = "";
+			}
+		}
+
+		function jafaarCheckChanged(player) {
+			djinnSelects.jafaar.select(player);
+			somethingChanged();
+		}
+		function shamhatCheckChanged(player) {
+			djinnSelects.shamhat.select(player);
+			somethingChanged();
+		}
+		function haurvatatCheckChanged(player) {
+			djinnSelects.haurvatat.select(player);
+			somethingChanged();
+		}
+
+		function djinnSelect(name, value1, value2) {
+			this.value1 = value1;
+			this.value2 = value2;
+			this.select1 = document.getElementById("p1" + name + "Input");
+			this.select2 = document.getElementById("p2" + name + "Input");
+			this.select3 = document.getElementById("p3" + name + "Input");
+			this.select4 = document.getElementById("p4" + name + "Input");
+
+			this.select = function(player) {
+				if (player != 1) { this.select1.checked = false; }
+				if (player != 2) { this.select2.checked = false; }
+				if (player != 3) { this.select3.checked = false; }
+				if (player != 4) { this.select4.checked = false; }
+			};
+
+			this.value = function(player) {
+				switch (player) {
+					case 1: if (this.select1.checked) { return this.value2; } else { return this.value1; }
+					case 2: if (this.select2.checked) { return this.value2; } else { return this.value1; }
+					case 3: if (this.select3.checked) { return this.value2; } else { return this.value1; }
+					case 4: if (this.select4.checked) { return this.value2; } else { return this.value1; }
+				}
+			};
+		}
+		var djinnSelects = {
+			init: function() {
+				this.jafaar = new djinnSelect("Jafaar", 1, 3);
+				this.shamhat = new djinnSelect("Shamhat", 2, 4);
+				this.haurvatat = new djinnSelect("Haurvatat", 3, 5);
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<H1>Five Tribes: Score Sheet</h1>
+
+	<table>
+		<thead>
+			<th>
+				<td colspan="2" class="center"><input type="text" id="p1Name" placeholder="Player 1"></td>
+				<td colspan="2" class="center"><input type="text" id="p2Name" placeholder="Player 2"></td>
+				<td colspan="2" class="center"><input type="text" id="p3Name" placeholder="Player 3"></td>
+				<td colspan="2" class="center"><input type="text" id="p4Name" placeholder="Player 4"></td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Gold Coins</td>
+				<td class="input"><input type="text" id="p1GcInput" onchange="somethingChanged()"></td><td id="p1GcTotal" class="score"></td>
+				<td class="input"><input type="text" id="p2GcInput" onchange="somethingChanged()"></td><td id="p2GcTotal" class="score"></td>
+				<td class="input"><input type="text" id="p3GcInput" onchange="somethingChanged()"></td><td id="p3GcTotal" class="score"></td>
+				<td class="input"><input type="text" id="p4GcInput" onchange="somethingChanged()"></td><td id="p4GcTotal" class="score"></td>
+			</tr>
+			<tr>
+				<td>Viziers</td>
+				<td class="input"><input type="text" id="p1VInput" onchange="somethingChanged()"></td><td id="p1VTotal" class="score"></td>
+				<td class="input"><input type="text" id="p2VInput" onchange="somethingChanged()"></td><td id="p2VTotal" class="score"></td>
+				<td class="input"><input type="text" id="p3VInput" onchange="somethingChanged()"></td><td id="p3VTotal" class="score"></td>
+				<td class="input"><input type="text" id="p4VInput" onchange="somethingChanged()"></td><td id="p4VTotal" class="score"></td>
+			</tr>
+			<tr>
+				<td class="right">Jafaar</td>
+				<td colspan="2" class="check"><input type="checkbox" id="p1JafaarInput" onchange="jafaarCheckChanged(1)" value="1"></td>
+				<td colspan="2" class="check"><input type="checkbox" id="p2JafaarInput" onchange="jafaarCheckChanged(2)" value="2"></td>
+				<td colspan="2" class="check"><input type="checkbox" id="p3JafaarInput" onchange="jafaarCheckChanged(3)" value="3"></td>
+				<td colspan="2" class="check"><input type="checkbox" id="p4JafaarInput" onchange="jafaarCheckChanged(4)" value="4"></td>
+			</tr>
+			<tr>
+				<td>Elders</td>
+				<td class="input"><input type="text" id="p1EInput" onchange="somethingChanged()"></td><td id="p1ETotal" class="score"></td>
+				<td class="input"><input type="text" id="p2EInput" onchange="somethingChanged()"></td><td id="p2ETotal" class="score"></td>
+				<td class="input"><input type="text" id="p3EInput" onchange="somethingChanged()"></td><td id="p3ETotal" class="score"></td>
+				<td class="input"><input type="text" id="p4EInput" onchange="somethingChanged()"></td><td id="p4ETotal" class="score"></td>
+			</tr>
+			<tr>
+				<td class="right">Shamhat</td>
+				<td colspan="2" class="check"><input type="checkbox" id="p1ShamhatInput" onchange="shamhatCheckChanged(1)" value="1"></td>
+				<td colspan="2" class="check"><input type="checkbox" id="p2ShamhatInput" onchange="shamhatCheckChanged(2)" value="2"></td>
+				<td colspan="2" class="check"><input type="checkbox" id="p3ShamhatInput" onchange="shamhatCheckChanged(3)" value="3"></td>
+				<td colspan="2" class="check"><input type="checkbox" id="p4ShamhatInput" onchange="shamhatCheckChanged(4)" value="4"></td>
+			</tr>
+			<tr>
+				<td>Djinns</td>
+				<td class="input"><input type="text" id="p1DInput" onchange="somethingChanged()"></td><td id="p1DTotal" class="score"></td>
+				<td class="input"><input type="text" id="p2DInput" onchange="somethingChanged()"></td><td id="p2DTotal" class="score"></td>
+				<td class="input"><input type="text" id="p3DInput" onchange="somethingChanged()"></td><td id="p3DTotal" class="score"></td>
+				<td class="input"><input type="text" id="p4DInput" onchange="somethingChanged()"></td><td id="p4DTotal" class="score"></td>
+			</tr>
+			<tr>
+				<td>Tiles (Camels)</td>
+				<td class="input"><input type="text" id="p1TInput" onchange="somethingChanged()"></td><td id="p1TTotal" class="score"></td>
+				<td class="input"><input type="text" id="p2TInput" onchange="somethingChanged()"></td><td id="p2TTotal" class="score"></td>
+				<td class="input"><input type="text" id="p3TInput" onchange="somethingChanged()"></td><td id="p3TTotal" class="score"></td>
+				<td class="input"><input type="text" id="p4TInput" onchange="somethingChanged()"></td><td id="p4TTotal" class="score"></td>
+			</tr>
+			<tr>
+				<td>Palm Trees</td>
+				<td class="input"><input type="text" id="p1PtInput" onchange="somethingChanged()"></td><td id="p1PtTotal" class="score"></td>
+				<td class="input"><input type="text" id="p2PtInput" onchange="somethingChanged()"></td><td id="p2PtTotal" class="score"></td>
+				<td class="input"><input type="text" id="p3PtInput" onchange="somethingChanged()"></td><td id="p3PtTotal" class="score"></td>
+				<td class="input"><input type="text" id="p4PtInput" onchange="somethingChanged()"></td><td id="p4PtTotal" class="score"></td>
+			</tr>
+			<tr>
+				<td class="right">Haurvatat</td>
+				<td colspan="2" class="check"><input type="checkbox" id="p1HaurvatatInput" onchange="haurvatatCheckChanged(1)" value="1"></td>
+				<td colspan="2" class="check"><input type="checkbox" id="p2HaurvatatInput" onchange="haurvatatCheckChanged(2)" value="2"></td>
+				<td colspan="2" class="check"><input type="checkbox" id="p3HaurvatatInput" onchange="haurvatatCheckChanged(3)" value="3"></td>
+				<td colspan="2" class="check"><input type="checkbox" id="p4HaurvatatInput" onchange="haurvatatCheckChanged(4)" value="4"></td>
+			</tr>
+			<tr>
+				<td>Palaces</td>
+				<td class="input"><input type="text" id="p1PInput" onchange="somethingChanged()"></td><td id="p1PTotal" class="score"></td>
+				<td class="input"><input type="text" id="p2PInput" onchange="somethingChanged()"></td><td id="p2PTotal" class="score"></td>
+				<td class="input"><input type="text" id="p3PInput" onchange="somethingChanged()"></td><td id="p3PTotal" class="score"></td>
+				<td class="input"><input type="text" id="p4PInput" onchange="somethingChanged()"></td><td id="p4PTotal" class="score"></td>
+			</tr>
+			<tr>
+				<td>Merchandise</td>
+				<td class="input"><input type="text" id="p1MInput" onchange="somethingChanged()"></td><td id="p1MTotal" class="score"></td>
+				<td class="input"><input type="text" id="p2MInput" onchange="somethingChanged()"></td><td id="p2MTotal" class="score"></td>
+				<td class="input"><input type="text" id="p3MInput" onchange="somethingChanged()"></td><td id="p3MTotal" class="score"></td>
+				<td class="input"><input type="text" id="p4MInput" onchange="somethingChanged()"></td><td id="p4MTotal" class="score"></td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td>Total</td>
+				<td id="p1Place"class="right"></td><td id="p1Total" class="total-score"></td>
+				<td id="p2Place"class="right"></td><td id="p2Total" class="total-score"></td>
+				<td id="p3Place"class="right"></td><td id="p3Total" class="total-score"></td>
+				<td id="p4Place"class="right"></td><td id="p4Total" class="total-score"></td>
+			</tr>
+		</tfoot>
+	</table>
+
+	<fieldset class="hidden">
+		<legend>Scores</legend>
+		<p id="debug"></p>
+	</fieldset>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<html>
+<head>
+	<title>Kim Hong factuur</title>
+
+	<style>
+		body {
+			font-family: sans-serif;
+			padding: 0px;
+			margin: 0px;
+			text-align: center;
+		}
+
+		@media print {
+			.screen_only { display:none; }
+		}
+		@page {
+			size: A4 portrait;
+			margin-left: 4cm;
+			margin-right: 4cm;
+			margin-top: 2cm;
+			margin-bottom: 2cm;
+		}
+
+		section {
+			width: 600px;
+		}
+		h1, .input, input, select {
+			text-align: left;
+		}
+		.header {
+			margin-right: 40px;
+		}
+		.header {
+			font-family: "Ariel Black", sans-serif;
+			font-size: 36pt;
+			font-weight: bold;
+		}
+		.sub-header {
+			font-family: "Ariel Black", sans-serif;
+			font-size: 18pt;
+			font-weight: bold;
+		}
+		.body {
+			margin-right: 30px;
+		}
+		.address, .bank {
+			font-family: "Tahoma", sans-serif;
+			font-size: 15pt;
+		}
+		.online {
+			font-family: "Comic Sans MS", sans-serif;
+			font-size: 15pt;
+		}
+		.kvk {
+			font-family: "Tahoma", sans-serif;
+			font-size: 14pt;
+		}
+		.btw {
+			font-family: "Times New Roman", serif;
+			font-size: 14pt;
+			font-weight: bold;
+		}
+		.payment {
+			font-family: "Tahoma", sans-serif;
+			font-size: 12pt;
+		}
+		.factuur {
+			font-family: "Tahoma", sans-serif;
+			font-size: 20pt;
+			font-weight: bold;
+			text-align: left;
+
+			display: inline-block;
+		}
+		.date {
+			font-family: "Ariel", sans-serif;
+			font-size: 14pt;
+			font-weight: bold;
+			text-align: right;
+
+			display: inline-block;
+			padding-left: 150px;
+		}
+		.klant_adres {
+			font-family: "Ariel", sans-serif;
+			font-size: 14pt;
+			text-align: left;
+			border: solid 1px;
+			float: none;
+			padding-left: 80px;
+			padding-right: 80px;
+			padding-top: 30px;
+			padding-bottom: 30px;
+		}
+		.delivery {
+			font-family: "Times New Roman", serif;
+			font-style: italic;
+			font-size: 12pt;
+			text-align: left;
+
+			padding-left: 80px;
+			padding-right: 80px;
+		}
+		#bestelbon_numbers {
+			font-family: "Times New Roman", serif;
+			font-style: italic;
+			font-size: 12pt;
+			text-align: left;
+		}
+		.money {
+			font-family: "Times New Toman", serif;
+			font-size: 12pt;
+			width: 100%;
+		}
+		.money-left {
+			float: left;
+			text-align: left;
+
+			padding-left: 80px;
+		}
+		.money-right {
+			float: right;
+			text-align: right;
+
+			padding-right: 290px;
+		}
+		.total {
+			font-family: "Times New Roman", serif;
+			font-weight: bold;
+
+			width: 100%;
+			text-align: left;
+			margin-top: 30px;
+		}
+		.total-text {
+			font-size: 18pt;
+
+			padding-left: 80px;
+		}
+		.total-label {
+			font-size: 12pt;
+
+			padding-left: 10px;
+		}
+		.total-money {
+			font-size: 24pt;
+			text-decoration: underline;
+
+			padding-left: 10px;
+		}
+		.additional {
+			font-family: "Calibri", sans-serif;
+			font-size: 12pt;
+
+			border: solid 1px;
+			text-align: left;
+			padding-left: 80px;
+			padding-right: 80px;
+			padding-top: 30px;
+			padding-bottom: 30px;
+		}
+		.signature {
+			font-family: "Times New Roman", serif;
+			font-size: 15pt;
+			text-align: right;
+
+			padding-right: 80px;
+		}
+		.labels {
+			vertical-align: top;
+		}
+		#klant_input {
+			width: 300px;
+			height: 75px;
+		}
+		#bestelbon_input {
+			width: 300px;
+			height: 50px;
+		}
+
+		.hidden {
+			display: none;
+		}
+	</style>
+
+	<script type="text/javascript">
+		// Wait till whole page is loaded.
+		if(window.attachEvent) {
+			window.attachEvent('onload', initialise);
+		} else {
+			if(window.onload) {
+				var curronload = window.onload;
+				var newonload = function(evt) {
+					curronload(evt);
+					initialise(evt);
+				};
+				window.onload = newonload;
+			} else {
+				window.onload = initialise;
+			}
+		}
+
+		// Check for the various File API support.
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			// Great success! All the File APIs are supported.
+		} else {
+			alert('The File APIs are not fully supported in this browser.');
+		}
+
+		placeHolderFactuurNumber = 151298;
+		function initialise() {
+			var today = new Date();
+			document.getElementById("factuur_date_input").value = today.toISOString().split("T")[0];
+
+			document.getElementById("bestelbon_numbers").innerHTML = "12345";
+			document.getElementById("delivery_date").innerHTML = today.getDate() + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
+
+			//document.getElementById("including").innerHTML = "&euro; 285,40";
+			//document.getElementById("vats").innerHTML = "&euro; 16,15";
+			//document.getElementById("excluding").innerHTML = "&euro; 269,25";
+			//document.getElementById("total-money").innerHTML = "&euro; 285,40";
+
+			somethingChanged();
+			klantInputChange();
+		}
+
+		function readKlanten() {
+			var file = document.getElementById("klant_file").files[0];
+			if (file) {
+				var reader = new FileReader();
+				reader.readAsText(file, "UTF-8");
+				reader.onload = function (evt) {
+					processKlanten(evt.target.result);
+					klantPickChange();
+					document.getElementById("debug").innerHTML = "[" + evt.target.result + "]";
+				}
+				reader.onerror = function (evt) {
+					document.getElementById("debug").innerHTML = "error reading file";
+				}
+			}
+		}
+
+		function processKlanten(textFileLines) {
+			lines = textFileLines.split("\n");
+			var klantenSelect = document.getElementById("klanten");
+			for (i = 0; i < lines.length; i++) {
+				klantFields = lines[i].split(",");
+				addKlant(klantenSelect, klantFields);
+			}
+		}
+		function addKlant(klantenSelect, klantData) {
+			var option = document.createElement("option");
+			option.text = klantData[0];
+			option.value = klantData.slice(1);
+			klantenSelect.add(option);
+		}
+
+		function somethingChanged() {
+			var factuurNumber = document.getElementById("factuur_number_input").value
+			if ((typeof factuurNumber == "undefined") || (factuurNumber == "")){
+				document.getElementById("factuur_number").innerHTML = placeHolderFactuurNumber;
+			} else {
+				document.getElementById("factuur_number").innerHTML = factuurNumber;
+			}
+
+			document.getElementById("factuur_date").innerHTML = isoToNormalDate(document.getElementById("factuur_date_input").value);
+		}
+
+		function klantPickChange() {
+			var klantAdresText = document.getElementById("klanten").options[document.getElementById("klanten").selectedIndex].value;
+			document.getElementById("klant_input").value = klantAdresText.replace(/\,/g, "\n");
+			document.getElementById("klant_adres").innerHTML = klantAdresText.replace(/\,/g, "<br />");
+		}
+
+		function klantInputChange() {
+			var klantInput = document.getElementById("klant_input").value.replace(/\n/g, "<br />");
+			if (klantInput == "") {
+				document.getElementById("klant_adres").className = "hidden";
+			} else {
+				document.getElementById("klant_adres").innerHTML = klantInput;
+				document.getElementById("klant_adres").removeAttribute("class");
+				document.getElementById("klant_adres").className = "klant_adres";
+			}
+		}
+
+		function bestelbonInputChange() {
+			var bestelbonNumbers = document.getElementById("bestelbon_input").value;
+			if (bestelbonNumbers == "") {
+				document.getElementById("bestelbon_label").className = "hidden";
+				document.getElementById("bestelbon_numbers").className = "hidden";
+			} else {
+				document.getElementById("bestelbon_numbers").innerHTML = bestelbonNumbers + "<br />";
+				document.getElementById("bestelbon_label").removeAttribute("class");
+				document.getElementById("bestelbon_numbers").removeAttribute("class");
+			}
+		}
+
+		function deliveryDateChange() {
+			var start = document.getElementById("delivery_date_start").value;
+			var end = document.getElementById("delivery_date_end").value;
+			if ((start == "") && (end == "")) {
+				document.getElementById("delivery_date_label").className = "hidden";
+				document.getElementById("delivery_date").className = "hidden";
+			} else {
+				var deliveryDateText;
+				if ((start != "") && (end == "")) {
+					deliveryDateText = isoToNormalDate(start);
+				} else if ((end != "") && (start == "")) {
+					deliveryDateText = isoToNormalDate(end);
+				} else if (start == end) {
+					deliveryDateText = isoToNormalDate(start);
+				} else if (start < end) {
+					deliveryDateText = isoToNormalDate(start) + " - " + isoToNormalDate(end);
+				} else {
+					deliveryDateText = isoToNormalDate(end) + " - " + isoToNormalDate(start);
+				}
+				document.getElementById("delivery_date").innerHTML = deliveryDateText
+				document.getElementById("delivery_date_label").removeAttribute("class");
+				document.getElementById("delivery_date").removeAttribute("class");
+			}
+		}
+
+		function moneyChanged() {
+			var money = document.getElementById("money_total").value.replace(/\,/g, ".");
+			if (document.getElementById("money_incl").checked) {
+				incl = Math.round(money * 100.0);
+				btw = Math.round((incl / 106) * 6);
+				excl = incl - btw;
+			} else {
+				excl = money * 100;
+				btw = Math.round(money * 6);
+				incl = (excl * 1) + btw;
+			}
+			document.getElementById("including").innerHTML = "&euro; " + Math.floor(incl / 100) + "," + Math.floor(incl % 100);
+			document.getElementById("vats").innerHTML = "&euro; " + Math.floor(btw / 100) + "," + Math.floor(btw % 100);
+			document.getElementById("excluding").innerHTML = "&euro; " + Math.floor(excl / 100) + "," + Math.floor(excl % 100);
+			document.getElementById("total-money").innerHTML = "&euro; " + Math.floor(incl / 100) + "," + Math.floor(incl % 100);
+		}
+
+		// Utilities
+		function isoToNormalDate(isoDate) {
+			var dateParts = isoDate.split("-");
+			if ((typeof dateParts[2] == "undefined") || (typeof dateParts[1] == "undefined") || (typeof dateParts[0] == "undefined")) {
+				var today = new Date();
+				return isoToNormalDate(today.toISOString().split("T")[0]);
+			} else {
+				return dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<H1 class="screen_only">Kim Hong factuur</h1>
+	<div class="screen_only">
+	<p class="input">
+		<span class="labels">factuur nummer: </span><input type="text" id="factuur_number_input" onChange="somethingChanged()" placeholder="151298"><br />
+		<span class="labels">factuur datum: </span><input type="date" id="factuur_date_input" onChange="somethingChanged()"><br />
+		<br />
+		<span class="labels">klant: </span><input class="input" type="file" id="klant_file" onchange="readKlanten()" /><br />
+		<select id="klanten" onchange="klantPickChange()"></select><br />
+		<textarea id="klant_input" onchange="klantInputChange()">[Naam]&#10[Adres]&#10[Postcode Woonplaats]</textarea><br />
+		<br />
+		<span class="labels">bestelbon nummers: </span><br />
+		<textarea id="bestelbon_input" onchange="bestelbonInputChange()"></textarea><br />
+		<span class="labels">leverdatums: </span><br />
+		<input type="date" id="delivery_date_start" onchange="deliveryDateChange()"> - <input type="date" id="delivery_date_end" onchange="deliveryDateChange()"><br />
+		<br />
+		<span class="labels">Totaal: &euro;</span><input type="text" id="money_total" onchange="moneyChanged()"><br />
+		<span class="labels">BTW: </span>
+			<input type="radio" name="btw" id="money_incl" onchange="moneyChanged()" value="incl" checked>incl. BTW
+			<input type="radio" name="btw" id="money_excl" onchange="moneyChanged()" value="excl">excl. BTW<br />
+	</p>
+	</div>
+
+	<section>
+		<p class="headers">
+			<span class="header">Kim-Hong</span><br />
+			<span class="sub-header">Toko - afhaalcentrum - Catering</span>
+		</p>
+		<p class="body">
+			<span class="address">Sibeliusstraat 28-30<br />4614 VD Bergen op Zoom<br />Tel: 0164-25 23 29</span><br />
+			<span class="online">W: www.kimhong.nl<br />E: info@kimhong.nl</span><br />
+			<span class="kvk">Kamer van koophandel: West-Brabant  56959648</span><br />
+			<span class="btw">BTW : 155472094B02</span><br />
+			<span class="bank">Bank: NL23 ABNA 055 57 67 078</span><br />
+			<span class="payment">Betalingen per bank gelieve binnen 14 dagen.</span>
+		</p>
+		<p>
+			<span class="factuur">Factuurnummer&nbsp;</span><span id="factuur_number" class="factuur"></span>
+			<span id="factuur_date" class="date"></span>
+		</p>
+		<p id="klant_adres" class="klant_adres"></p>
+		<p class="delivery">
+			<span id="bestelbon_label" class="hidden">Bestelbonnummer: </span><span id="bestelbon_numbers" class="hidden"><br /></span>
+			<span id="delivery_date_label" class="hidden">Geleverde maaltijden in periode: </span><span id="delivery_date" class="hidden"></span>
+		</p>
+		<p class="money">
+			<span class="money-left">Totaal incl. 6% BTW</span><span id="including" class="money-right"></span><br />
+			<span class="money-left">BTW 6%</span><span id="vats" class="money-right"></span><br />
+			<span class="money-left">Totaal excl. BTW</span><span id="excluding" class="money-right"></span>
+		</p>
+		<p class="total">
+			<span class="total-text">Totaal</span>
+			<span class="total-label">(inclusief BTW laag)</span>
+			<span id="total-money" class="total-money"></span>
+		</p>
+		<p class="additional">U kunt afrekenen bij ons in de zaak of overmaken naar bovenstaand rekeningnummer met vermelding van het factuurnummer.</p>
+		<p class="additional">Wij danken u voor de bestelling en wellicht tot binnenkort.</p>
+		<p class="signature">Handtekening</p>
+	</section>
+
+	<fieldset class="screen_only" hidden>
+		<legend>Debug</legend>
+		<p id="debug"></p>
+	</fieldset>
+</body>
+</html>
