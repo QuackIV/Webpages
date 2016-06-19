@@ -7,11 +7,10 @@
 			font-family: sans-serif;
 			padding: 0px;
 			margin: 0px;
-			text-align: center;
 		}
 
 		@media print {
-			.screen_only { display:none; }
+			.screen_only { display:none !important; }
 		}
 		@page {
 			size: A4 portrait;
@@ -27,13 +26,19 @@
 		h1, .input, input, select {
 			text-align: left;
 		}
-		.header {
-			margin-right: 40px;
+		fieldset.screen_only {
+			display: inline-block;
+			vertical-align: top;
+		}
+		section {
+			display: inline-block;
+			text-align: center;
 		}
 		.header {
 			font-family: "Ariel Black", sans-serif;
 			font-size: 36pt;
 			font-weight: bold;
+			margin-right: 40px;
 		}
 		.sub-header {
 			font-family: "Ariel Black", sans-serif;
@@ -352,7 +357,7 @@
 
 <body>
 	<H1 class="screen_only">Kim Hong factuur</h1>
-	<div class="screen_only">
+	<fieldset class="screen_only">
 	<p class="input">
 		<span class="labels">factuur nummer: </span><input type="text" id="factuur_number_input" onChange="somethingChanged()" placeholder="151298"><br />
 		<span class="labels">factuur datum: </span><input type="date" id="factuur_date_input" onChange="somethingChanged()"><br />
@@ -371,11 +376,11 @@
 			<input type="radio" name="btw" id="money_incl" onchange="moneyChanged()" value="incl" checked>incl. BTW
 			<input type="radio" name="btw" id="money_excl" onchange="moneyChanged()" value="excl">excl. BTW<br />
 	</p>
-	</div>
+	</fieldset>
 
 	<section>
 		<p class="headers">
-			<span class="header">Kim-Hong</span><br />
+			<span class="header">Kim - Hong</span><br />
 			<span class="sub-header">Toko - afhaalcentrum - Catering</span>
 		</p>
 		<p class="body">
@@ -410,9 +415,9 @@
 		<p class="signature">Handtekening</p>
 	</section>
 
-	<fieldset class="screen_only" hidden>
+	<!-- fieldset class="screen_only">
 		<legend>Debug</legend>
 		<p id="debug"></p>
-	</fieldset>
+	</fieldset -->
 </body>
 </html>
